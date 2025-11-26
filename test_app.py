@@ -1,5 +1,5 @@
 import unittest
-from python-app-deploy.app import app
+from app import app
 
 class TestApp(unittest.TestCase):
     def test_home(self):
