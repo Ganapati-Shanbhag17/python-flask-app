@@ -1,3 +1,4 @@
+cat > Jenkinsfile << 'EOF'
 pipeline {
     agent any
 
@@ -5,20 +6,14 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Creating virtual environment and installing dependencies...'
-                sh '''
-                python3 -m venv venv
-                . venv/bin/activate
-                pip install -r requirements.txt
-                '''
+                sh 'python3 -m venv venv || true'
+                sh '. venv/bin/activate && pip install -r requirements.txt'
             }
         }
         stage('Test') {
             steps {
                 echo 'Running tests...'
-                sh '''
-                . venv/bin/activate
-                python3 -m unittest discover -s .
-                '''
+                sh 'python3 -m unittest discover -s .'
             }
         }
         stage('Deploy') {
@@ -42,17 +37,15 @@ pipeline {
         stage('Test Application') {
             steps {
                 echo 'Testing application...'
-                sh 'python3 test_app.py'
+                sh 'python3 ${WORKSPACE}/test_app.py'
             }
         }
     }
 
     post {
-        success {
-            echo 'Pipeline completed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed!'
-        }
+        success { echo 'Pipeline completed successfully!' }
+        failure { echo 'Pipeline failed. Check the logs for more details.' }
     }
 }
+EOF
+
